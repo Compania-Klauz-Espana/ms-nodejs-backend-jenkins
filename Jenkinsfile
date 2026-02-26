@@ -129,16 +129,21 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (DEV)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-dev"
-                  LB_IP=""
                   MAX_RETRIES=5
                   RETRY_COUNT=0
+                  LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                    LB_IP=$(az aks command invoke \
+                      --resource-group $RESOURCE_GROUP \
+                      --name $AKS_NAME \
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
+                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 5s..."
-                      sleep 5
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
+                      sleep 10
                     fi
                   done
 
@@ -189,16 +194,21 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (QA)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-qa"
-                  LB_IP=""
                   MAX_RETRIES=5
                   RETRY_COUNT=0
+                  LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                    LB_IP=$(az aks command invoke \
+                      --resource-group $RESOURCE_GROUP \
+                      --name $AKS_NAME \
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
+                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 5s..."
-                      sleep 5
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
+                      sleep 10
                     fi
                   done
 
@@ -249,16 +259,21 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (PRD)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-prd"
-                  LB_IP=""
                   MAX_RETRIES=5
                   RETRY_COUNT=0
+                  LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                    LB_IP=$(az aks command invoke \
+                      --resource-group $RESOURCE_GROUP \
+                      --name $AKS_NAME \
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
+                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 5s..."
-                      sleep 5
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
+                      sleep 10
                     fi
                   done
 
