@@ -129,21 +129,24 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (DEV)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-dev"
-                  MAX_RETRIES=5
+                  MAX_RETRIES=10
                   RETRY_COUNT=0
                   LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(az aks command invoke \
+                    RESULT=$(az aks command invoke \
                       --resource-group $RESOURCE_GROUP \
                       --name $AKS_NAME \
-                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
-                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" 2>&1 || true)
+
+                    echo "DEBUG resultado: $RESULT"
+
+                    LB_IP=$(echo "$RESULT" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1)
 
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
-                      sleep 10
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 15s..."
+                      sleep 15
                     fi
                   done
 
@@ -194,21 +197,24 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (QA)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-qa"
-                  MAX_RETRIES=5
+                  MAX_RETRIES=10
                   RETRY_COUNT=0
                   LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(az aks command invoke \
+                    RESULT=$(az aks command invoke \
                       --resource-group $RESOURCE_GROUP \
                       --name $AKS_NAME \
-                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
-                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" 2>&1 || true)
+
+                    echo "DEBUG resultado: $RESULT"
+
+                    LB_IP=$(echo "$RESULT" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1)
 
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
-                      sleep 10
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 15s..."
+                      sleep 15
                     fi
                   done
 
@@ -259,21 +265,24 @@ pipeline {
                   echo ">>> Obteniendo IP del LoadBalancer (PRD)..."
 
                   SERVICE_NAME="my-nodejs-service-${APELLIDO}-prd"
-                  MAX_RETRIES=5
+                  MAX_RETRIES=10
                   RETRY_COUNT=0
                   LB_IP=""
 
                   while [ -z "$LB_IP" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                    LB_IP=$(az aks command invoke \
+                    RESULT=$(az aks command invoke \
                       --resource-group $RESOURCE_GROUP \
                       --name $AKS_NAME \
-                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" \
-                      --query "logs" -o tsv 2>/dev/null | tr -d '[:space:]')
+                      --command "kubectl get svc $SERVICE_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" 2>&1 || true)
+
+                    echo "DEBUG resultado: $RESULT"
+
+                    LB_IP=$(echo "$RESULT" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1)
 
                     if [ -z "$LB_IP" ]; then
                       RETRY_COUNT=$((RETRY_COUNT+1))
-                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 10s..."
-                      sleep 10
+                      echo "Intento $RETRY_COUNT/$MAX_RETRIES: IP aún no asignada, esperando 15s..."
+                      sleep 15
                     fi
                   done
 
